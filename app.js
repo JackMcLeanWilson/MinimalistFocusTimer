@@ -9,13 +9,16 @@ const btnStopElement = document.querySelector('[data-action="stop"]');
 const btnResetElement = document.querySelector('[data-action="reset"]');
 const minutes = document.querySelector('.minutes');
 const seconds = document.querySelector('.seconds');
-let timerTime = 0;
-let interval;
 
+let timerTime = 1500; // 25 minutes in seconds
+let interval;
+let isRunning = false;
 
 const start = () => {
-  isRunning = true;
-  interval = setInterval(incrementTimer, 1000)
+  if (!isRunning) {
+    isRunning = true;
+    interval = setInterval(decrementTimer, 1000);
+  }
 }
 
 const stop = () => {
@@ -24,32 +27,34 @@ const stop = () => {
 }
 
 const reset = () => {
-  minutes.innerText = '00';
-  seconds.innerText = '00';
+  stop(); // also stops the timer
+  timerTime = 1500;
+  updateDisplay();
 }
 
 const pad = (number) => {
   return (number < 10) ? '0' + number : number;
 }
 
-const incrementTimer = () => {
-  timerTime++;
-  
+const updateDisplay = () => {
   const numberMinutes = Math.floor(timerTime / 60);
   const numberSeconds = timerTime % 60;
-  
   minutes.innerText = pad(numberMinutes);
   seconds.innerText = pad(numberSeconds);
 }
 
-btnStartElement.addEventListener('click', startTimer = () => {
-  start();
-});
+const decrementTimer = () => {
+  if (timerTime > 0) {
+    timerTime--;
+    updateDisplay();
+  } else {
+    stop(); // stop when the timer hits 0
+  }
+}
 
-btnStopElement.addEventListener('click', stopTimer = () => {
-  stop();
-});
+// Initial display update
+updateDisplay();
 
-btnResetElement.addEventListener('click', stopTimer = () => {
-  reset();
-});
+btnStartElement.addEventListener('click', start);
+btnStopElement.addEventListener('click', stop);
+btnResetElement.addEventListener('click', reset);
